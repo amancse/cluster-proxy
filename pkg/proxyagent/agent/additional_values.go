@@ -95,6 +95,13 @@ func GetClusterProxyAdditionalValueFunc(
 			}
 			values["serviceProxySecretCert"] = base64.StdEncoding.EncodeToString(serviceProxySecretCert)
 			values["serviceProxySecretKey"] = base64.StdEncoding.EncodeToString(serviceProxySecretKey)
+
+			// Wire additionalServiceProxyArgs from ManagedProxyConfiguration to the Helm chart.
+			// This allows operators to pass custom flags (e.g. --kube-api-qps, --token-review-cache-ttl)
+			// to the service-proxy sidecar without the addon-manager reverting them.
+			if len(proxyConfig.Spec.ProxyAgent.AdditionalServiceProxyArgs) > 0 {
+				values["additionalServiceProxyArgs"] = proxyConfig.Spec.ProxyAgent.AdditionalServiceProxyArgs
+			}
 		}
 
 		return values, nil
